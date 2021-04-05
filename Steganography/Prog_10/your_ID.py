@@ -57,7 +57,6 @@ def main():
     else:
         print('Try again, re-enter E or G')
 # --------------------------------------------------
-    
 
 # --------------------------------------------------
 def embed_text_to_image(text, file_in, file_out):
@@ -72,7 +71,7 @@ def embed_text_to_image(text, file_in, file_out):
         for t in text:
             text_in_bi += char_to_bits(t)
 
-        text_in_bi = '0100111101001011'+ len_text_in_bi + text_in_bi + '0100111101001011'
+        text_in_bi = SPECIAL_BITS + len_text_in_bi + text_in_bi + SPECIAL_BITS
         if (math.ceil(len(text_in_bi)/3) > len(clone)*len(clone[0]) or len(text)>65535):
             return False
         else:
@@ -96,6 +95,7 @@ def get_embedded_text_from_image(file_in):
     resultbit = ''
     characters = ''
     resultstr = '' 
+    purebit = ''
     image = load_image(file_in)
     for i in image:
         for j in i:
@@ -104,17 +104,20 @@ def get_embedded_text_from_image(file_in):
                     resultbit += '0'
                 else:
                     resultbit += '1'
-    resultbit=resultbit.split('0100111101001011') 
-    if(len(image[0])*len(image) < math.ceil(16+8/3) or (resultbit[0]!='' or len(resultbit)< 3 or resultbit[1]=="") or (bits_to_int((resultbit[1][0:16])) != len(resultbit[1][16:])/8)):
+    purebit = resultbit
+    resultbit=resultbit.split(SPECIAL_BITS) 
+    
+    if(len(image[0])*len(image) < math.ceil(16+8/3) or (resultbit[0]!='' or len(resultbit)< 3 or resultbit[1]== "")):
         return "" 
-    else:
-        characters = resultbit[1]
+   
+    for c in range (bits_to_int(resultbit[1][0:16])):
+        resultstr += bits_to_char(purebit[32+(8*c):40+(8*c)])
+        if c == (bits_to_int(resultbit[1][0:16])-1):
+            if purebit[40+(8*c):40+(8*c)+16]==SPECIAL_BITS:
+                return resultstr
+            else:
+                return ""
     
-        for i in range (16,len(characters),8):
-            resultstr += bits_to_char(characters[i:i+8])
-    
-        return resultstr
-     
 # --------------------------------------------------
 SPECIAL_BITS = '0100111101001011'
 main()
