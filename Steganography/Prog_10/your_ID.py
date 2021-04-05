@@ -105,7 +105,7 @@ def get_embedded_text_from_image(file_in):
                 else:
                     resultbit += '1'
     resultbit=resultbit.split('0100111101001011') 
-    if(len(image[0])*len(image) < math.ceil(16+8/3) or (resultbit[0]!='' and len(resultbit)<=2) or (bits_to_int((resultbit[1][0:16])) != len(resultbit[1][16:])/8)):
+    if(len(image[0])*len(image) < math.ceil(16+8/3) or (resultbit[0]!='' and len(resultbit)< 3) or (bits_to_int((resultbit[1][0:16])) != len(resultbit[1][16:])/8)):
         return "" 
     else:
         characters = resultbit[1]
